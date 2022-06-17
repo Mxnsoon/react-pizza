@@ -6,19 +6,23 @@ import Sort from "../components/Sort";
 import Pagination from "../components/Pagination/Pagination";
 import {SearchContext} from "../App";
 import {useDispatch, useSelector} from "react-redux";
-import {setCategoryId} from "../redux/slices/filterSlice";
+import {setCategoryId, setCurrentPage} from "../redux/slices/filterSlice";
+import axios from "axios";
 
 const Home = () => {
 
-    const { categoryId, sort } = useSelector(state => state.filterSlice)
+    const { categoryId, sort, currentPage } = useSelector(state => state.filterSlice)
     const dispatch = useDispatch();
     const onChangeCategory = (id) => {
         dispatch(setCategoryId(id))
     }
 
+    const onChangePage = (page) => {
+        dispatch(setCurrentPage(page))
+    }
+
     const [items, setItems] = useState([])
     const [isLoading, setIsLoading] = useState(true)
-    const [currentPage, setCurrentPage] = useState(1)
 
     const {searchValue} = useContext(SearchContext)
 
@@ -30,10 +34,9 @@ const Home = () => {
         const category = categoryId > 0 ? `&category=${categoryId}` : ''
         const search = searchValue ? `&search=${searchValue}` : ''
 
-        fetch(`https://62a9d80d3b314385543cca25.mockapi.io/items?page=${currentPage}&limit=4${category}&sortBy=${sortBy}&order=${order}${search}`)
-            .then(res => res.json())
-            .then((arr) => {
-                setItems(arr);
+        axios.get(`https://62a9d80d3b314385543cca25.mockapi.io/items?page=${currentPage}&limit=4${category}&sortBy=${sortBy}&order=${order}${search}`)
+            .then(response => {
+                setItems(response.data)
                 setIsLoading(false)
             })
         window.scrollTo(0, 0);
@@ -55,7 +58,7 @@ const Home = () => {
                         ))
                 }
             </div>
-            <Pagination onChangePage={(number) => setCurrentPage(number)} />
+            <Pagination currentPage={currentPage} onChangePage={onChangePage} />
         </div>
     );
 };
