@@ -29,7 +29,7 @@ const Home = () => {
     const [isLoading, setIsLoading] = useState(true)
     const {searchValue} = useContext(SearchContext)
 
-    const fetchPizzas = () => {
+    const fetchPizzas = async () => {
         setIsLoading(true)
 
         const order = sort.sortProperty.includes('-') ? 'asc' : 'desc'
@@ -37,11 +37,16 @@ const Home = () => {
         const category = categoryId > 0 ? `&category=${categoryId}` : ''
         const search = searchValue ? `&search=${searchValue}` : ''
 
-        axios.get(`https://62a9d80d3b314385543cca25.mockapi.io/items?page=${currentPage}&limit=4${category}&sortBy=${sortBy}&order=${order}${search}`)
-            .then(response => {
-                setItems(response.data)
-                setIsLoading(false)
-            })
+        try {
+            const res = await axios.get(`https://62a9d80d3b314385543cca25.mockapi.io/items?page=${currentPage}&limit=4${category}&sortBy=${sortBy}&order=${order}${search}`)
+            setItems(res.data)
+        } catch (error) {
+            console.log(error)
+            alert('Ошибка при получении пицц')
+        }
+        finally {
+            setIsLoading(false)
+        }
     }
 
     useEffect(() => {
