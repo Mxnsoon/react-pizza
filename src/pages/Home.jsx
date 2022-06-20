@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef} from 'react';
+import React, {useEffect, useRef} from 'react';
 import Skeleton from "../components/PizzaBlock/Skeleton";
 import PizzaBlock from "../components/PizzaBlock/PizzaBlock";
 import Categories from "../components/Categories";
@@ -7,7 +7,7 @@ import Pagination from "../components/Pagination/Pagination";
 import {useDispatch, useSelector} from "react-redux";
 import {selectFilter, setCategoryId, setCurrentPage, setFilters} from "../redux/slices/filterSlice";
 import qs from 'qs';
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {fetchPizzas, selectPizzaData} from "../redux/slices/pizzasSlice";
 
 const Home = () => {
@@ -89,7 +89,7 @@ const Home = () => {
                             status === 'loading'
                                 ? [...new Array(6)].map((_, i) => <Skeleton key={i}/>)
                                 : items.map(obj => (
-                                    <PizzaBlock key={obj.id} {...obj} />
+                                    <Link key={obj.id} to={`/pizza/${obj.id}`}><PizzaBlock  {...obj} /></Link>
                                 ))
                         }
                     </div>
