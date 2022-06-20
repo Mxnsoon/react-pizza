@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef} from 'react';
 import Skeleton from "../components/PizzaBlock/Skeleton";
 import PizzaBlock from "../components/PizzaBlock/PizzaBlock";
 import Categories from "../components/Categories";
@@ -7,15 +7,16 @@ import Pagination from "../components/Pagination/Pagination";
 import {SearchContext} from "../App";
 import {useDispatch, useSelector} from "react-redux";
 import {setCategoryId, setCurrentPage, setFilters} from "../redux/slices/filterSlice";
-import axios from "axios";
 import qs from 'qs';
 import {useNavigate} from "react-router-dom";
+import {fetchPizzas} from "../redux/slices/pizzasSlice";
 
 const Home = () => {
     const navigate = useNavigate()
     const isSearch = useRef(false)
     const isMounted = useRef(false)
-    const { categoryId, sort, currentPage } = useSelector(state => state.filterSlice)
+    const {categoryId, sort, currentPage} = useSelector(state => state.filterSlice)
+    const {items, status} = useSelector(state => state.pizzaSlice)
     const dispatch = useDispatch();
     const onChangeCategory = (id) => {
         dispatch(setCategoryId(id))
@@ -25,28 +26,20 @@ const Home = () => {
         dispatch(setCurrentPage(page))
     }
 
-    const [items, setItems] = useState([])
-    const [isLoading, setIsLoading] = useState(true)
     const {searchValue} = useContext(SearchContext)
 
-    const fetchPizzas = async () => {
-        setIsLoading(true)
-
+    const getPizzas = async () => {
         const order = sort.sortProperty.includes('-') ? 'asc' : 'desc'
         const sortBy = sort.sortProperty.replace('-', '')
         const category = categoryId > 0 ? `&category=${categoryId}` : ''
         const search = searchValue ? `&search=${searchValue}` : ''
-
-        try {
-            const res = await axios.get(`https://62a9d80d3b314385543cca25.mockapi.io/items?page=${currentPage}&limit=4${category}&sortBy=${sortBy}&order=${order}${search}`)
-            setItems(res.data)
-        } catch (error) {
-            console.log(error)
-            alert('Ошибка при получении пицц')
-        }
-        finally {
-            setIsLoading(false)
-        }
+        dispatch(fetchPizzas({
+            order,
+            sortBy,
+            category,
+            search,
+            currentPage
+        }))
     }
 
     useEffect(() => {
@@ -62,11 +55,9 @@ const Home = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
         if (!isSearch.current) {
-            fetchPizzas();
+            getPizzas();
         }
         isSearch.current = false
-
-
     }, [categoryId, sort, searchValue, currentPage])
 
     useEffect(() => {
@@ -85,19 +76,27 @@ const Home = () => {
         <div className="container">
             <div className="content__top">
                 <Categories value={categoryId} onChangeCategory={onChangeCategory}/>
-                <Sort />
+                <Sort/>
             </div>
             <h2 className="content__title">Все пиццы</h2>
-            <div className="content__items">
-                {
-                    isLoading
-                        ? [...new Array(6)].map((_, i) => <Skeleton key={i}/>)
-                        : items.map(obj => (
-                            <PizzaBlock key={obj.id} {...obj} />
-                        ))
-                }
-            </div>
-            <Pagination currentPage={currentPage} onChangePage={onChangePage} />
+            {
+                status === 'error' ?
+                    <div className="content__error-info">
+                        <h2>Произошла ошибка <icon>😕</icon></h2>
+                        <p>
+                            Не удалось получить пиццы.
+                        </p>
+                    </div> : <div className="content__items">
+                        {
+                            status === 'loading'
+                                ? [...new Array(6)].map((_, i) => <Skeleton key={i}/>)
+                                : items.map(obj => (
+                                    <PizzaBlock key={obj.id} {...obj} />
+                                ))
+                        }
+                    </div>
+            }
+            <Pagination currentPage={currentPage} onChangePage={onChangePage}/>
         </div>
     );
 };
