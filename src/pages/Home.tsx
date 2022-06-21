@@ -10,18 +10,18 @@ import qs from 'qs';
 import {Link, useNavigate} from "react-router-dom";
 import {fetchPizzas, selectPizzaData} from "../redux/slices/pizzasSlice";
 
-const Home = () => {
+const Home: React.FC = () => {
     const navigate = useNavigate()
     const isSearch = useRef(false)
     const isMounted = useRef(false)
     const {categoryId, sort, currentPage, searchValue} = useSelector(selectFilter)
     const {items, status} = useSelector(selectPizzaData)
     const dispatch = useDispatch();
-    const onChangeCategory = (id) => {
-        dispatch(setCategoryId(id))
+    const onChangeCategory = (idx: number) => {
+        dispatch(setCategoryId(idx))
     }
 
-    const onChangePage = (page) => {
+    const onChangePage = (page: number) => {
         dispatch(setCurrentPage(page))
     }
 
@@ -31,6 +31,7 @@ const Home = () => {
         const sortBy = sort.sortProperty.replace('-', '')
         const category = categoryId > 0 ? `&category=${categoryId}` : ''
         const search = searchValue ? `&search=${searchValue}` : ''
+        // @ts-ignore
         dispatch(fetchPizzas({
             order,
             sortBy,
@@ -80,7 +81,7 @@ const Home = () => {
             {
                 status === 'error' ?
                     <div className="content__error-info">
-                        <h2>Произошла ошибка <icon>😕</icon></h2>
+                        <h2>Произошла ошибка <span>😕</span></h2>
                         <p>
                             Не удалось получить пиццы.
                         </p>
@@ -88,7 +89,7 @@ const Home = () => {
                         {
                             status === 'loading'
                                 ? [...new Array(6)].map((_, i) => <Skeleton key={i}/>)
-                                : items.map(obj => (
+                                : items.map((obj: any) => (
                                     <Link key={obj.id} to={`/pizza/${obj.id}`}><PizzaBlock  {...obj} /></Link>
                                 ))
                         }

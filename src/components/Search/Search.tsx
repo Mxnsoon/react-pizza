@@ -3,13 +3,13 @@ import styles from './Search.module.scss';
 import close from '../../assets/img/close.svg';
 import debounce from 'lodash.debounce';
 import {useDispatch, useSelector} from "react-redux";
-import {setSearchValue} from "../../redux/slices/filterSlice";
+import {selectSearchValue, setSearchValue} from "../../redux/slices/filterSlice";
 
 const Search = () => {
     const dispatch = useDispatch();
-    const searchValue = useSelector(state => state.filterSlice.searchValue)
+    const searchValue = useSelector(selectSearchValue)
     const [value, setValue] = useState('');
-    const inputRef = useRef();
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const updateSearchValue = useCallback(
         debounce((str) => {
@@ -17,7 +17,7 @@ const Search = () => {
         }, 250), []
     )
 
-    const onChangeInput = event => {
+    const onChangeInput = (event: any) => {
         setValue(event.target.value)
         updateSearchValue(event.target.value)
     }
@@ -25,7 +25,7 @@ const Search = () => {
     const onClickClear = () => {
         dispatch(setSearchValue(''))
         setValue('')
-        inputRef.current.focus();
+        inputRef.current?.focus()
     }
 
 
@@ -33,7 +33,7 @@ const Search = () => {
         <div className={styles.root}>
             <input ref={inputRef} value={value} onChange={onChangeInput} className={styles.input}
                    placeholder="Поиск пиццы..."/>
-            {searchValue && <img alt="крестик" onClick={onClickClear} className={styles.clearIcon} src={close} />}
+            {searchValue && <img alt="крестик" onClick={onClickClear} className={styles.clearIcon} src={close}/>}
         </div>
     );
 };
