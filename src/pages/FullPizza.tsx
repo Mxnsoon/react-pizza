@@ -2,8 +2,12 @@ import React, {useEffect, useState} from 'react';
 import {useNavigate, useParams} from "react-router-dom";
 import axios from "axios";
 
-const FullPizza = () => {
-    const [pizza, setPizza] = useState();
+const FullPizza: React.FC = () => {
+    const [pizza, setPizza] = useState<{
+        imageUrl: string;
+        title: string;
+        price: number;
+    }>();
     const { id } = useParams()
     const navigate = useNavigate();
 
@@ -21,14 +25,14 @@ const FullPizza = () => {
     }, [id])
 
     if (!pizza) {
-        return 'Загрузка...'
+        return <>Загрузка...
+        </>
     }
 
     return (
         <div className="container">
             <img src={pizza.imageUrl} />
             <h2>{pizza.title}</h2>
-            <p>Lorem ipsum dolor</p>
             <h4>{pizza.price}</h4>
         </div>
     );
