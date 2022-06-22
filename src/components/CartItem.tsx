@@ -12,13 +12,13 @@ type CartItemType = {
     imageUrl: string;
 }
 
-const CartItem: React.FC<CartItemType> = ({ id, title, size, type, price, count, imageUrl }) => {
+const CartItemBlock: React.FC<CartItemType> = ({ id, title, size, type, price, count, imageUrl }) => {
     const dispatch = useDispatch();
 
     const onClickPlus = () => {
         dispatch(addItem({
             id
-        }))
+        } as CartItemType))
     }
     const onClickMinus = () => {
         dispatch(minusItem(id))
@@ -90,4 +90,4 @@ const CartItem: React.FC<CartItemType> = ({ id, title, size, type, price, count,
     );
 };
 
-export default CartItem;
+export default CartItemBlock;
