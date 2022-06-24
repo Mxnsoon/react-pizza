@@ -3,7 +3,8 @@ import styles from './Search.module.scss';
 import close from '../../assets/img/close.svg';
 import debounce from 'lodash.debounce';
 import {useDispatch, useSelector} from "react-redux";
-import {selectSearchValue, setSearchValue} from "../../redux/slices/filterSlice";
+import {selectSearchValue} from "../../redux/filter/selectors";
+import {setSearchValue} from "../../redux/filter/slice";
 
 const Search = () => {
     const dispatch = useDispatch();
