@@ -23,7 +23,8 @@ const Header = () => {
                         </div>
                     </div>
                 </Link>
-                <Search />
+                {/* eslint-disable-next-line no-restricted-globals */}
+                {location.pathname !== '/cart' && <Search />}
                 <div className="header__cart">
                     <Link to="/cart" className="button button--cart">
                         <span>{totalPrice} ₽</span>

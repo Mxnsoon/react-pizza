@@ -566,6 +566,22 @@ body {
 .cart__item-count-minus svg path:first-of-type {
   display: none;
 }
+.cart__item-count-minus--disabled {
+  opacity: 0.4;
+  border-color: #787878;
+}
+.cart__item-count-minus--disabled:active {
+  transform: none;
+}
+.cart__item-count-minus--disabled:hover {
+  background-color: transparent;
+}
+.cart__item-count-minus--disabled:hover svg path {
+  fill: #787878;
+}
+.cart__item-count-minus--disabled svg path {
+  fill: #787878;
+}
 .cart__item-count b {
   font-size: 22px;
 }
